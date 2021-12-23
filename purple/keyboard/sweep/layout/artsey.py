@@ -1,6 +1,6 @@
 from adafruit_hid.keycode import Keycode
 
-from purple.action import Action, Press, ToLayer
+from purple.action import Action, Lock, Press, ToLayer
 from purple.layer import Layer
 
 
@@ -48,10 +48,10 @@ class Layout:
                 0b00000000101000000: Action(Press(Keycode.FORWARD_SLASH)),
                 0b00000111000001000: Action(Press(Keycode.SHIFT)),
                 0b00000010000100000: Action(Press(Keycode.SHIFT, Keycode.ONE)),
-                # shift lock
+                0b00000001000010000: Action(Lock(Keycode.SHIFT)),
                 0b00000000001111000: Action(Press(Keycode.SPACE)),
                 0b00000000101110000: Action(Press(Keycode.CAPS_LOCK)),
-                0b00000001000001000: Action(Press(Keycode.BACKSPACE)),
+                0b00000001000001000: Action(Press(Keycode.BACKSPACE), repeat=True),
                 0b00000001000100000: Action(Press(Keycode.DELETE)),
 
                 0b00000001000101000: Action(ToLayer(4)),
@@ -103,12 +103,12 @@ class Layout:
             {
                 0b00000100000000000: Action(Press(Keycode.PAGE_UP)),
                 0b00000010000000000: Action(Press(Keycode.HOME)),
-                0b00000001000000000: Action(Press(Keycode.UP_ARROW)),
+                0b00000001000000000: Action(Press(Keycode.UP_ARROW), repeat=True),
                 0b00000000100000000: Action(Press(Keycode.END)),
                 0b00000000001000000: Action(Press(Keycode.PAGE_DOWN)),
-                0b00000000000100000: Action(Press(Keycode.LEFT_ARROW)),
-                0b00000000000010000: Action(Press(Keycode.DOWN_ARROW)),
-                0b00000000000001000: Action(Press(Keycode.RIGHT_ARROW)),
+                0b00000000000100000: Action(Press(Keycode.LEFT_ARROW), repeat=True),
+                0b00000000000010000: Action(Press(Keycode.DOWN_ARROW), repeat=True),
+                0b00000000000001000: Action(Press(Keycode.RIGHT_ARROW), repeat=True),
 
                 0b00000001000101000: Action(ToLayer(0)),
             },

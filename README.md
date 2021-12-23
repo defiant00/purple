@@ -15,6 +15,7 @@
         * Red - Control
         * Blue - Alt
         * Pink - GUI
+    * Rapid blinking indicates a key is locked.
 
 ## Usage
 
@@ -35,6 +36,9 @@
 * `_MODIFIER_BLINK` - How long to wait between modifier blinks.
 * `_MODIFIER_BLINK_ON` - How long to turn on the LED per modifier blink.
 * `_MOD_COLORS` - The LED color tuple `(r, g, b)` to use for the modifier. Should be a bright value so it can be seen when on layers.
+* `_LOCK_BLINK` - How long to wait between locked key blinks.
+* `_LOCK_BLINK_ON` - How long to turn on the LED per locked key blink.
+* `_LOCK_COLOR` - The LED color tuple `(r, g, b)` to use when a key is locked.
 
 ### Creating a new Keyboard
 
@@ -87,6 +91,9 @@ A layout defines what happens when a chord is pressed or held. It contains:
                 * `Press(*keycodes)` - Press the specified keys.
                     * Simple key map: `Action(Press(Keycode.A))`
                     * `z` on tap, `Ctrl+z` on hold: `Action(Press(Keycode.Z), Press(Keycode.CONTROL, Keycode.Z))`
+                * `Lock(*keycodes)` - Toggle whether the specified keys are locked or unlocked. Locked keys are added automatically to other presses.
+                    * Simple key lock: `Action(Lock(Keycode.SHIFT))`
+                    * `z` on tap, lock `Ctrl` on hold: `Action(Press(Keycode.Z), Lock(Keycode.CONTROL))`
                 * `ToLayer(index)` - Switch to the specified layer.
                     * Simple layer switch: `Action(ToLayer(1))`
                     * `z` on tap, layer switch on hold: `Action(Press(Keycode.Z), ToLayer(0))`
@@ -102,6 +109,15 @@ None at this time.
 
 ## Release Notes
 
-### 1.0.0
+### 1.1.0 [2021-12-23]
+
+* Added
+    * Ability to lock and unlock keys
+* Updated
+    * ARTSEY
+        * Added shift lock
+        * Added repeat to the backspace and arrow keys
+
+### 1.0.0 [2021-12-21]
 
 * Initial version

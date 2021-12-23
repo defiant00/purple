@@ -5,11 +5,16 @@ import usb_hid
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
 
+from purple.key import Key
+
 
 class Core:
     _HOLD_DELAY = 200
     _MODIFIER_BLINK = 500
     _MODIFIER_BLINK_ON = 100
+    _LOCK_BLINK = 100
+    _LOCK_BLINK_ON = 10
+    _LOCK_COLOR = (127, 127, 127)
     _MOD_COLORS = {
         Keycode.SHIFT: (255, 255, 0),
         Keycode.CONTROL: (255, 0, 0),
@@ -28,30 +33,13 @@ class Core:
         self._pressed = False
         self.layer_index = 0
         self._key_buffer = []
+        self._lock_key_buffer = []
         self._prior_change_time = supervisor.ticks_ms()
 
-    def add_auto_mod(self):
-        self.add_to_buffer(self._layout.auto_mod)
-
-    def add_to_buffer(self, keycodes):
+    def _add_to_buffer(self, keycodes):
         for keycode in keycodes:
             if keycode not in self._key_buffer:
                 self._key_buffer.append(keycode)
-
-    def toggle_buffer(self, keycode):
-        if keycode in self._key_buffer:
-            self._key_buffer.remove(keycode)
-        else:
-            self._key_buffer.append(keycode)
-
-    def press_buffer(self):
-        self._keyboard.press(*self._key_buffer)
-
-    def release_all(self):
-        self._keyboard.release_all()
-
-    def clear_buffer(self):
-        self._key_buffer.clear()
 
     def _calc_chord(self):
         val = 0
@@ -68,6 +56,32 @@ class Core:
             if chord in chords:
                 chords[chord].run(self, hold)
                 return
+
+    def press(self, keycodes, action, hold):
+        if len(keycodes) == 1 and Key.is_mod(keycodes[0]):
+            if keycodes[0] in self._key_buffer:
+                self._key_buffer.remove(keycodes[0])
+            else:
+                self._key_buffer.append(keycodes[0])
+        else:
+            # locked keys
+            self._add_to_buffer(self._lock_key_buffer)
+            # auto mod
+            if hold and action.auto_mod:
+                self._add_to_buffer(self._layout.auto_mod)
+            # primary keys
+            self._add_to_buffer(keycodes)
+            self._keyboard.press(*self._key_buffer)
+            if not (hold and action.repeat):
+                self._keyboard.release_all()
+            self._key_buffer.clear()
+    
+    def toggle_lock(self, keycodes):
+        for keycode in keycodes:
+            if keycode in self._lock_key_buffer:
+                self._lock_key_buffer.remove(keycode)
+            else:
+                self._lock_key_buffer.append(keycode)
 
     def run(self):
         try:
@@ -95,12 +109,12 @@ class Core:
                     if not self._pressed:
                         self._press_chord(False)
                     else:
-                        self.release_all()
+                        self._keyboard.release_all()
                     self._entering = False
                 if new_down:
                     self._entering = True
                     if self._pressed:
-                        self.release_all()
+                        self._keyboard.release_all()
                 if new_down or new_up:
                     self._pressed = False
                     self._prior_change_time = current_time
@@ -112,15 +126,20 @@ class Core:
                     self._entering = True
                     self._pressed = True
                     self._press_chord(True)
-                if self._key_buffer:
+                if (
+                    self._lock_key_buffer
+                    and (current_time % Core._LOCK_BLINK) < Core._LOCK_BLINK_ON
+                ):
+                    self._led.fill(Core._LOCK_COLOR)
+                elif (
+                    self._key_buffer
+                    and (current_time % Core._MODIFIER_BLINK) < Core._MODIFIER_BLINK_ON
+                ):
                     index = (
                         current_time % (len(self._key_buffer) * Core._MODIFIER_BLINK)
                     ) // Core._MODIFIER_BLINK
-                    if (current_time % Core._MODIFIER_BLINK) < Core._MODIFIER_BLINK_ON:
-                        self._led.fill(Core._MOD_COLORS[self._key_buffer[index]])
-                    else:
-                        self._led.fill(self._layout.layers[self.layer_index].color)
+                    self._led.fill(Core._MOD_COLORS[self._key_buffer[index]])
                 else:
                     self._led.fill(self._layout.layers[self.layer_index].color)
         finally:
-            self.release_all()
+            self._keyboard.release_all()
