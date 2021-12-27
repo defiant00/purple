@@ -43,10 +43,10 @@ class Core:
 
     def _calc_chord(self):
         val = 0
-        for key in self._keys:
-            val <<= 1
+        for i in range(len(self._keys)):
+            key = self._keys[i]
             if key.current or key.prior:
-                val += 1
+                val += (1<<i)
         return val
 
     def _press_chord(self, hold):

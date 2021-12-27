@@ -81,7 +81,7 @@ A layout defines what happens when a chord is pressed or held. It contains:
 * `auto_mod` - A list of modifier keycodes to apply on hold.
 * `layers` - A list of layers. Chord resolution starts on the current layer and works its way back to 0 until it finds a layer that can handle the chord.
     * `Layer` - A class containing a dictionary of chords and actions, and the layer color.
-        * `chord` - A binary representation of the chord, with `1` being pressed, and `0` released. Digits read left to right correspond with keys 0 to max, so for example `0b1000` is key 0 pressed on a 4-key layout, and `0b0011` is keys 2 and 3 on the same.
+        * `chord` - A binary representation of the chord, with `1` being pressed, and `0` released. The bit location corresponds with the key, so for example `0b0001` is key 0 pressed on a 4-key layout, and `0b1100` is keys 2 and 3 on the same.
         * `Action` - Class defining the action to take for a chord. The `Action(tap, hold=None, repeat=False, auto_mod=True)` constructor has the following parameters:
             * `tap` - The action to take when the key is tapped.
             * `hold` - The action to take when the key is held. The `tap` action is used if `hold` is `None`.
@@ -114,6 +114,7 @@ None at this time.
 * Added
     * LED pulsing to indicate locked keys
 * Updated
+    * Bit order for chords.
     * Version numbering
 
 ### 0.2.0 [2021-12-23]
