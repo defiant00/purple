@@ -12,9 +12,9 @@ class Core:
     _HOLD_DELAY = 200
     _MODIFIER_BLINK = 500
     _MODIFIER_BLINK_ON = 100
-    _LOCK_BLINK = 100
-    _LOCK_BLINK_ON = 10
-    _LOCK_COLOR = (127, 127, 127)
+    _LOCK_FADE = 800
+    _LOCK_FADE_MIN = 0.1
+    _LOCK_FADE_NO_COLOR = (32, 32, 32)
     _MOD_COLORS = {
         Keycode.SHIFT: (255, 255, 0),
         Keycode.CONTROL: (255, 0, 0),
@@ -126,20 +126,26 @@ class Core:
                     self._entering = True
                     self._pressed = True
                     self._press_chord(True)
+
                 if (
-                    self._lock_key_buffer
-                    and (current_time % Core._LOCK_BLINK) < Core._LOCK_BLINK_ON
-                ):
-                    self._led.fill(Core._LOCK_COLOR)
-                elif (
                     self._key_buffer
                     and (current_time % Core._MODIFIER_BLINK) < Core._MODIFIER_BLINK_ON
                 ):
                     index = (
                         current_time % (len(self._key_buffer) * Core._MODIFIER_BLINK)
                     ) // Core._MODIFIER_BLINK
-                    self._led.fill(Core._MOD_COLORS[self._key_buffer[index]])
+                    color = Core._MOD_COLORS[self._key_buffer[index]]
                 else:
-                    self._led.fill(self._layout.layers[self.layer_index].color)
+                    color = self._layout.layers[self.layer_index].color
+                
+                lock_mult = 1
+                if self._lock_key_buffer:
+                    lock_mult = (
+                        abs(current_time % (Core._LOCK_FADE * 2) - Core._LOCK_FADE) / Core._LOCK_FADE
+                    ) * (1 - Core._LOCK_FADE_MIN) + Core._LOCK_FADE_MIN
+                    if color == (0, 0, 0):
+                        color = Core._LOCK_FADE_NO_COLOR
+
+                self._led.fill(tuple(lock_mult*i for i in color))
         finally:
             self._keyboard.release_all()
