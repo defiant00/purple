@@ -1,6 +1,8 @@
+from adafruit_hid.consumer_control_code import ConsumerControlCode
 from adafruit_hid.keycode import Keycode
+from adafruit_hid.mouse import Mouse
 
-from purple.action import Action, Lock, Press, ToLayer
+from purple.action import Action, Lock, MediaPress, MouseMove, MousePress, Press, ToLayer
 from purple.layer import Layer
 
 
@@ -23,7 +25,7 @@ class Layout:
                 0b11100000000000: Action(Press(Keycode.L)),
                 0b01110000000000: Action(Press(Keycode.M)),
                 0b00110000000000: Action(Press(Keycode.N)),
-                0b00010000000000: Action(Press(Keycode.O)),
+                0b00010000000000: Action(Press(Keycode.O), ToLayer(4)),
                 0b10110000000000: Action(Press(Keycode.P)),
                 0b00000101100000: Action(Press(Keycode.Q)),
                 0b00000010000000: Action(Press(Keycode.R)),
@@ -54,7 +56,8 @@ class Layout:
                 0b10000010000000: Action(Press(Keycode.BACKSPACE), repeat=True),
                 0b00100010000000: Action(Press(Keycode.DELETE)),
 
-                0b10100010000000: Action(ToLayer(4)),
+                0b10100010000000: Action(ToLayer(5)),
+                0b01000101000000: Action(ToLayer(6)),
             },
             (0, 0, 0)
         ),
@@ -101,6 +104,18 @@ class Layout:
         ),
         Layer(
             {
+                0b00000001000000: Action(MediaPress(ConsumerControlCode.VOLUME_INCREMENT), repeat=True),
+                0b00000010000000: Action(Press(Keycode.INSERT)),
+                0b00000100000000: Action(MediaPress(ConsumerControlCode.MUTE)),
+                0b00010000000000: Action(ToLayer(0)),
+                0b00100000000000: Action(MediaPress(ConsumerControlCode.VOLUME_DECREMENT), repeat=True),
+                0b01000000000000: Action(Press(Keycode.PRINT_SCREEN)),
+                0b10000000000000: Action(Press(Keycode.RIGHT_SHIFT)),
+            },
+            (64, 0, 0)
+        ),
+        Layer(
+            {
                 0b00000000100000: Action(Press(Keycode.PAGE_UP)),
                 0b00000001000000: Action(Press(Keycode.HOME)),
                 0b00000010000000: Action(Press(Keycode.UP_ARROW), repeat=True),
@@ -111,6 +126,21 @@ class Layout:
                 0b10000000000000: Action(Press(Keycode.RIGHT_ARROW), repeat=True),
 
                 0b10100010000000: Action(ToLayer(0)),
+            },
+            (64, 64, 0)
+        ),
+        Layer(
+            {
+                0b00000000100000: Action(MouseMove(0, 0, 1), repeat=True),
+                0b00000001000000: Action(MousePress(Mouse.RIGHT_BUTTON)),
+                0b00000010000000: Action(MouseMove(0, -8), repeat=True),
+                0b00000100000000: Action(MousePress(Mouse.LEFT_BUTTON)),
+                0b00010000000000: Action(MouseMove(0, 0, -1), repeat=True),
+                0b00100000000000: Action(MouseMove(-8, 0), repeat=True),
+                0b01000000000000: Action(MouseMove(0, 8), repeat=True),
+                0b10000000000000: Action(MouseMove(8, 0), repeat=True),
+
+                0b01000101000000: Action(ToLayer(0)),
             },
             (0, 64, 0)
         ),

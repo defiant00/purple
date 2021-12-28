@@ -6,10 +6,11 @@
 
 * Layers!
 * Map chords to key combinations on tap or hold.
+* Map normal keys, media keys, and the mouse.
 * One-shot modifiers.
 * Auto Mod for if you want to apply a modifier globally on hold.
 * LED layer and modifier state indicators.
-    * Layers can specify a color.
+    * Layers have a color.
     * When modifiers are active, the LED blinks a color for each in turn:
         * Yellow - Shift
         * Red - Control
@@ -33,6 +34,7 @@
 
 `core.py` contains some useful values that can be adjusted:
 * `_HOLD_DELAY` - How long to wait in ms before a key is considered held.
+* `_MOUSE_REPEAT_RATE` - How long to wait in ms before repeating a mouse movement when the key is held.
 * `_MODIFIER_BLINK` - How long to wait between modifier blinks.
 * `_MODIFIER_BLINK_ON` - How long to turn on the LED per modifier blink.
 * `_MOD_COLORS` - The LED color tuple `(r, g, b)` to use for the modifier. Should be a bright value so it can be seen when on layers.
@@ -94,6 +96,11 @@ A layout defines what happens when a chord is pressed or held. It contains:
                 * `Lock(*keycodes)` - Toggle whether the specified keys are locked or unlocked. Locked keys are added automatically to other presses.
                     * Simple key lock: `Action(Lock(Keycode.SHIFT))`
                     * `z` on tap, lock `Ctrl` on hold: `Action(Press(Keycode.Z), Lock(Keycode.CONTROL))`
+                * `MediaPress(consumer_control_code)` - Press the specified media key, such a `PLAY_PAUSE` or `MUTE`.
+                * `MousePress(mouse_button)` - Press the specified mouse button.
+                * `MouseMove(x, y, wheel=0)` - Move the mouse.
+                    * Move the mouse to the right: `Action(MouseMove(8, 0))`
+                    * Scroll the mouse wheel: `Action(MouseMove(0, 0, 1))`
                 * `ToLayer(index)` - Switch to the specified layer.
                     * Simple layer switch: `Action(ToLayer(1))`
                     * `z` on tap, layer switch on hold: `Action(Press(Keycode.Z), ToLayer(0))`
@@ -109,12 +116,23 @@ None at this time.
 
 ## Release Notes
 
+### 0.4.0 [2021-12-27]
+
+* Added
+    * Media and mouse actions
+* Updated
+    * Modifier key list now contains both left and right modifier keys
+    * Unified modifier key list
+    * ARTSEY
+        * Added media keys
+        * Added mouse controls
+
 ### 0.3.0 [2021-12-26]
 
 * Added
     * LED pulsing to indicate locked keys
 * Updated
-    * Bit order for chords.
+    * Bit order for chords
     * Version numbering
 
 ### 0.2.0 [2021-12-23]

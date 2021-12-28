@@ -12,11 +12,3 @@ class Key:
     def update(self):
         self.prior = self.current
         self.current = not self._in_out.value
-
-    def is_mod(keycode):
-        return (
-            keycode == Keycode.SHIFT
-            or keycode == Keycode.CONTROL
-            or keycode == Keycode.ALT
-            or keycode == Keycode.GUI
-        )

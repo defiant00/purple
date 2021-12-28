@@ -2,31 +2,38 @@ import board
 import neopixel
 import supervisor
 import usb_hid
+from adafruit_hid.consumer_control import ConsumerControl
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
-
-from purple.key import Key
+from adafruit_hid.mouse import Mouse
 
 
 class Core:
     _HOLD_DELAY = 200
+    _MOUSE_REPEAT_RATE = 20
     _MODIFIER_BLINK = 500
     _MODIFIER_BLINK_ON = 100
     _LOCK_FADE = 800
     _LOCK_FADE_MIN = 0.1
     _LOCK_FADE_NO_COLOR = (32, 32, 32)
     _MOD_COLORS = {
-        Keycode.SHIFT: (255, 255, 0),
-        Keycode.CONTROL: (255, 0, 0),
-        Keycode.ALT: (0, 0, 255),
-        Keycode.GUI: (255, 0, 255),
+        Keycode.LEFT_SHIFT: (255, 255, 0),
+        Keycode.RIGHT_SHIFT: (255, 255, 0),
+        Keycode.LEFT_CONTROL: (255, 0, 0),
+        Keycode.RIGHT_CONTROL: (255, 0, 0),
+        Keycode.LEFT_ALT: (0, 0, 255),
+        Keycode.RIGHT_ALT: (0, 0, 255),
+        Keycode.LEFT_GUI: (255, 0, 255),
+        Keycode.RIGHT_GUI: (255, 0, 255),
     }
 
     def __init__(self, keys, layout):
         self._keys = keys
         self._layout = layout
         self._led = neopixel.NeoPixel(board.NEOPIXEL, 1)
+        self._consumer_control = ConsumerControl(usb_hid.devices)
         self._keyboard = Keyboard(usb_hid.devices)
+        self._mouse = Mouse(usb_hid.devices)
         # Whether we're currently entering a chord or releasing one.
         self._entering = True
         # Whether the current chord has been pressed through holding.
@@ -34,6 +41,8 @@ class Core:
         self.layer_index = 0
         self._key_buffer = []
         self._lock_key_buffer = []
+        self._held_mouse_movement = ()
+        self._prior_mouse_time = supervisor.ticks_ms()
         self._prior_change_time = supervisor.ticks_ms()
 
     def _add_to_buffer(self, keycodes):
@@ -56,9 +65,15 @@ class Core:
             if chord in chords:
                 chords[chord].run(self, hold)
                 return
+    
+    def _release_all(self):
+        self._consumer_control.release()
+        self._keyboard.release_all()
+        self._mouse.release_all()
+        self._held_mouse_movement = ()
 
     def press(self, keycodes, action, hold):
-        if len(keycodes) == 1 and Key.is_mod(keycodes[0]):
+        if len(keycodes) == 1 and keycodes[0] in Core._MOD_COLORS:
             if keycodes[0] in self._key_buffer:
                 self._key_buffer.remove(keycodes[0])
             else:
@@ -73,8 +88,24 @@ class Core:
             self._add_to_buffer(keycodes)
             self._keyboard.press(*self._key_buffer)
             if not (hold and action.repeat):
-                self._keyboard.release_all()
+                self._release_all()
             self._key_buffer.clear()
+    
+    def media_press(self, consumer_control_code, action, hold):
+        self._consumer_control.press(consumer_control_code)
+        if not (hold and action.repeat):
+            self._release_all()
+    
+    def mouse_press(self, mouse_button, action, hold):
+        self._mouse.press(mouse_button)
+        if not (hold and action.repeat):
+            self._release_all()
+    
+    def mouse_move(self, x, y, wheel, action, hold):
+        self._mouse.move(x, y, wheel)
+        if hold and action.repeat:
+            self._prior_mouse_time = supervisor.ticks_ms()
+            self._held_mouse_movement = (x, y, wheel)
     
     def toggle_lock(self, keycodes):
         for keycode in keycodes:
@@ -91,10 +122,13 @@ class Core:
                 new_up = 0
                 current_time = supervisor.ticks_ms()
 
-                # If the time value has wrapped, update the prior down time.
+                # If the time value has wrapped, update the prior time.
                 if current_time < self._prior_change_time:
                     self._prior_change_time = current_time
+                if current_time < self._prior_mouse_time:
+                    self._prior_mouse_time = current_time
 
+                # Keys
                 for key in self._keys:
                     key.update()
                     if key.current:
@@ -109,12 +143,12 @@ class Core:
                     if not self._pressed:
                         self._press_chord(False)
                     else:
-                        self._keyboard.release_all()
+                        self._release_all()
                     self._entering = False
                 if new_down:
                     self._entering = True
                     if self._pressed:
-                        self._keyboard.release_all()
+                        self._release_all()
                 if new_down or new_up:
                     self._pressed = False
                     self._prior_change_time = current_time
@@ -126,7 +160,16 @@ class Core:
                     self._entering = True
                     self._pressed = True
                     self._press_chord(True)
+                
+                # Mouse
+                while (
+                    self._held_mouse_movement
+                    and (current_time - self._prior_mouse_time) > Core._MOUSE_REPEAT_RATE
+                ):
+                    self._prior_mouse_time += Core._MOUSE_REPEAT_RATE
+                    self._mouse.move(*self._held_mouse_movement)
 
+                # LED Colors
                 if (
                     self._key_buffer
                     and (current_time % Core._MODIFIER_BLINK) < Core._MODIFIER_BLINK_ON
@@ -148,4 +191,4 @@ class Core:
 
                 self._led.fill(tuple(lock_mult*i for i in color))
         finally:
-            self._keyboard.release_all()
+            self._release_all()
