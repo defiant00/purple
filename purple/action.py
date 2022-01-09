@@ -1,15 +1,15 @@
 class Action:
-    def __init__(self, tap, hold=None, repeat=False, auto_mod=True):
-        self._tap = tap
-        self._hold = hold
-        self.repeat = repeat
+    def __init__(self, tap_action, hold_action=None, hold=False, auto_mod=True):
+        self._tap_action = tap_action
+        self._hold_action = hold_action
+        self.hold = hold
         self.auto_mod = auto_mod
 
     def run(self, core, hold):
-        if hold and self._hold is not None:
-            self._hold.run(core, self, hold)
+        if hold and self._hold_action is not None:
+            self._hold_action.run(core, self, hold)
         else:
-            self._tap.run(core, self, hold)
+            self._tap_action.run(core, self, hold)
 
 
 class Lock:
@@ -44,6 +44,14 @@ class MousePress:
 
     def run(self, core, action, hold):
         core.mouse_press(self._mouse_button, action, hold)
+
+
+class OneShot:
+    def __init__(self, *keycodes):
+        self._keycodes = keycodes
+
+    def run(self, core, action, hold):
+        core.one_shot(self._keycodes)
 
 
 class Press:

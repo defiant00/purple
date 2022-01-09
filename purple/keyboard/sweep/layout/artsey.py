@@ -2,7 +2,7 @@ from adafruit_hid.consumer_control_code import ConsumerControlCode
 from adafruit_hid.keycode import Keycode
 from adafruit_hid.mouse import Mouse
 
-from purple.action import Action, Lock, MediaPress, MouseMove, MousePress, Press, ToLayer
+from purple.action import Action, Lock, MediaPress, MouseMove, MousePress, OneShot, Press, ToLayer
 from purple.layer import Layer
 
 
@@ -42,18 +42,18 @@ class Layout:
                 0b10000100000000: Action(Press(Keycode.ENTER)),
                 0b00010111000000: Action(Press(Keycode.TAB)),
                 0b01100100000000: Action(Press(Keycode.QUOTE)),
-                0b10000000100000: Action(Press(Keycode.CONTROL)),
+                0b10000000100000: Action(OneShot(Keycode.CONTROL)),
                 0b01000100000000: Action(Press(Keycode.PERIOD)),
-                0b01000000100000: Action(Press(Keycode.GUI)),
+                0b01000000100000: Action(OneShot(Keycode.GUI)),
                 0b00100100000000: Action(Press(Keycode.COMMA)),
-                0b00100000100000: Action(Press(Keycode.ALT)),
+                0b00100000100000: Action(OneShot(Keycode.ALT)),
                 0b00010100000000: Action(Press(Keycode.FORWARD_SLASH)),
-                0b10000011100000: Action(Press(Keycode.SHIFT)),
+                0b10000011100000: Action(OneShot(Keycode.SHIFT)),
                 0b00100001000000: Action(Press(Keycode.SHIFT, Keycode.ONE)),
                 0b01000010000000: Action(Lock(Keycode.SHIFT)),
                 0b11110000000000: Action(Press(Keycode.SPACE)),
                 0b01110100000000: Action(Press(Keycode.CAPS_LOCK)),
-                0b10000010000000: Action(Press(Keycode.BACKSPACE), repeat=True),
+                0b10000010000000: Action(Press(Keycode.BACKSPACE), hold=True),
                 0b00100010000000: Action(Press(Keycode.DELETE)),
 
                 0b10100010000000: Action(ToLayer(5)),
@@ -104,11 +104,11 @@ class Layout:
         ),
         Layer(
             {
-                0b00000001000000: Action(MediaPress(ConsumerControlCode.VOLUME_INCREMENT), repeat=True),
+                0b00000001000000: Action(MediaPress(ConsumerControlCode.VOLUME_INCREMENT), hold=True),
                 0b00000010000000: Action(Press(Keycode.INSERT)),
                 0b00000100000000: Action(MediaPress(ConsumerControlCode.MUTE)),
                 0b00010000000000: Action(ToLayer(0)),
-                0b00100000000000: Action(MediaPress(ConsumerControlCode.VOLUME_DECREMENT), repeat=True),
+                0b00100000000000: Action(MediaPress(ConsumerControlCode.VOLUME_DECREMENT), hold=True),
                 0b01000000000000: Action(Press(Keycode.PRINT_SCREEN)),
                 0b10000000000000: Action(Press(Keycode.RIGHT_SHIFT)),
             },
@@ -118,12 +118,12 @@ class Layout:
             {
                 0b00000000100000: Action(Press(Keycode.PAGE_UP)),
                 0b00000001000000: Action(Press(Keycode.HOME)),
-                0b00000010000000: Action(Press(Keycode.UP_ARROW), repeat=True),
+                0b00000010000000: Action(Press(Keycode.UP_ARROW), hold=True),
                 0b00000100000000: Action(Press(Keycode.END)),
                 0b00010000000000: Action(Press(Keycode.PAGE_DOWN)),
-                0b00100000000000: Action(Press(Keycode.LEFT_ARROW), repeat=True),
-                0b01000000000000: Action(Press(Keycode.DOWN_ARROW), repeat=True),
-                0b10000000000000: Action(Press(Keycode.RIGHT_ARROW), repeat=True),
+                0b00100000000000: Action(Press(Keycode.LEFT_ARROW), hold=True),
+                0b01000000000000: Action(Press(Keycode.DOWN_ARROW), hold=True),
+                0b10000000000000: Action(Press(Keycode.RIGHT_ARROW), hold=True),
 
                 0b10100010000000: Action(ToLayer(0)),
             },
@@ -131,14 +131,14 @@ class Layout:
         ),
         Layer(
             {
-                0b00000000100000: Action(MouseMove(0, 0, 1), repeat=True),
+                0b00000000100000: Action(MouseMove(0, 0, 1), hold=True),
                 0b00000001000000: Action(MousePress(Mouse.RIGHT_BUTTON)),
-                0b00000010000000: Action(MouseMove(0, -8), repeat=True),
+                0b00000010000000: Action(MouseMove(0, -8), hold=True),
                 0b00000100000000: Action(MousePress(Mouse.LEFT_BUTTON)),
-                0b00010000000000: Action(MouseMove(0, 0, -1), repeat=True),
-                0b00100000000000: Action(MouseMove(-8, 0), repeat=True),
-                0b01000000000000: Action(MouseMove(0, 8), repeat=True),
-                0b10000000000000: Action(MouseMove(8, 0), repeat=True),
+                0b00010000000000: Action(MouseMove(0, 0, -1), hold=True),
+                0b00100000000000: Action(MouseMove(-8, 0), hold=True),
+                0b01000000000000: Action(MouseMove(0, 8), hold=True),
+                0b10000000000000: Action(MouseMove(8, 0), hold=True),
 
                 0b01000101000000: Action(ToLayer(0)),
             },

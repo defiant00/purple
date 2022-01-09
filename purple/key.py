@@ -3,12 +3,20 @@ from adafruit_hid.keycode import Keycode
 
 
 class Key:
-    def __init__(self, in_out):
-        self.prior = False
+    def __init__(self, pin):
+        self._prior = False
         self.current = False
-        self._in_out = in_out
-        self._in_out.switch_to_input(pull=Pull.UP)
+        self._pin = pin
+        self._pin.switch_to_input(pull=Pull.UP)
+    
+    @property
+    def just_pressed(self):
+        return self.current and not self._prior
+    
+    @property
+    def just_released(self):
+        return self._prior and not self.current
 
     def update(self):
-        self.prior = self.current
-        self.current = not self._in_out.value
+        self._prior = self.current
+        self.current = not self._pin.value
