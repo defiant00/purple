@@ -39,7 +39,7 @@ class Layout:
                 0b00000110000000000: Action(Press(Keycode.Z)),
 
                 0b00000000000000111: Action(Press(Keycode.GRAVE_ACCENT)),
-                0b00000000100000001: Action(Press(Keycode.SEMICOLON)),
+                0b00000010100000000: Action(Press(Keycode.SEMICOLON)),
                 0b00001100000000000: Action(Press(Keycode.PERIOD)),
                 0b00011000000000000: Action(Press(Keycode.COMMA)),
                 0b00000000100000010: Action(Press(Keycode.LEFT_BRACKET)),
@@ -79,7 +79,7 @@ class Layout:
                 0b10000110000000000: Action(Press(Keycode.SHIFT, Keycode.Z)),
 
                 0b10000000000000111: Action(Press(Keycode.SHIFT, Keycode.GRAVE_ACCENT)),
-                0b10000000100000001: Action(Press(Keycode.SHIFT, Keycode.SEMICOLON)),
+                0b10000010100000000: Action(Press(Keycode.SHIFT, Keycode.SEMICOLON)),
                 0b10001100000000000: Action(Press(Keycode.SHIFT, Keycode.PERIOD)),
                 0b10011000000000000: Action(Press(Keycode.SHIFT, Keycode.COMMA)),
                 0b10000000100000010: Action(Press(Keycode.SHIFT, Keycode.LEFT_BRACKET)),
