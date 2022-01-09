@@ -134,6 +134,7 @@ None at this time.
     * `OneShot` action
     * Optional `Key` debounce
     * `PerformanceCounter` extra
+    * [Soar](https://github.com/defiant00/soar) layout
 * Updated
     * Renamed `repeat` to `hold` in `Action`
     * Reworked `Key` to match debounced version
