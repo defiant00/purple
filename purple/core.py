@@ -4,6 +4,7 @@ from adafruit_hid.consumer_control import ConsumerControl
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.mouse import Mouse
 
+import purple.helpers
 from purple.status import Status
 
 
@@ -41,7 +42,7 @@ class Core:
         for i in range(len(self._keys)):
             key = self._keys[i]
             if key.current or key.just_released:
-                val += (1<<i)
+                val += purple.helpers.key(i)
         return val
 
     def _press_chord(self, hold):

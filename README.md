@@ -93,6 +93,7 @@ A layout defines what happens when a chord is pressed or held. It contains:
 * `layers` - A list of layers. Chord resolution starts on the current layer and works its way back to 0 until it finds a layer that can handle the chord.
     * `Layer` - A class containing a dictionary of chords and actions, and the layer color.
         * `chord` - A binary representation of the chord, with `1` being pressed, and `0` released. The bit location corresponds with the key, so for example `0b0001` is key 0 pressed on a 4-key layout, and `0b1100` is keys 2 and 3 on the same.
+            * `purple.helpers` contains `key(index)` that can be used to simplify creating chords, and the values can also be added. In the above example, `key(0)` is key 0, and `key(2)+key(3)` is keys 2 and 3 pressed.
         * `Action` - Class defining the action to take for a chord. The `Action(tap_action, hold_action=None, hold=False, auto_mod=True)` constructor has the following parameters:
             * `tap_action` - The action to take when the key is tapped.
             * `hold_action` - The action to take when the key is held. `tap_action` is used if `hold_action` is `None`.
@@ -126,6 +127,13 @@ Pull requests for bug fixes, new keyboards, and new layouts are all welcome!
 None at this time.
 
 ## Release Notes
+
+### 0.5.1 [2022-01-11]
+
+* Added
+    * Key helper
+* Updated
+    * [Soar](https://github.com/defiant00/soar) layout to 0.2.0
 
 ### 0.5.0 [2022-01-08]
 
