@@ -128,6 +128,12 @@ None at this time.
 
 ## Release Notes
 
+### 0.5.2 [2022-01-14]
+
+* Added
+    * [Mist](https://github.com/defiant00/mist) keyboard
+    * [Soar](https://github.com/defiant00/soar) layout for Mist
+
 ### 0.5.1 [2022-01-11]
 
 * Added
