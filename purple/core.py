@@ -167,6 +167,7 @@ class Core:
                         self._lock_key_buffer
                     )
                     for extra in self._extras:
-                        extra.update(status)
+                        if extra:
+                            extra.update(status)
         finally:
             self._release_all()
