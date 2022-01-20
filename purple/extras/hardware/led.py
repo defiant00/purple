@@ -25,11 +25,11 @@ class LED:
 
     def update(self, status):
         if (
-            status.key_buffer
+            status.one_shot_key_buffer
             and (status.time % LED._MODIFIER_BLINK) < LED._MODIFIER_BLINK_ON
         ):
-            index = (status.time % (len(status.key_buffer) * LED._MODIFIER_BLINK)) // LED._MODIFIER_BLINK
-            key = status.key_buffer[index]
+            index = (status.time % (len(status.one_shot_key_buffer) * LED._MODIFIER_BLINK)) // LED._MODIFIER_BLINK
+            key = status.one_shot_key_buffer[index]
             if key in LED._MOD_COLORS:
                 color = LED._MOD_COLORS[key]
         else:

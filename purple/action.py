@@ -8,7 +8,7 @@ class Action:
     def run(self, core, hold):
         if hold and self._hold_action is not None:
             self._hold_action.run(core, self, hold)
-        else:
+        elif self._tap_action is not None:
             self._tap_action.run(core, self, hold)
 
 
@@ -55,11 +55,12 @@ class OneShot:
 
 
 class Press:
-    def __init__(self, *keycodes):
+    def __init__(self, *keycodes, one_shot=True):
         self._keycodes = keycodes
+        self._one_shot = one_shot
 
     def run(self, core, action, hold):
-        core.press(self._keycodes, action, hold)
+        core.press(self._keycodes, action, hold, self._one_shot)
 
 
 class ToLayer:

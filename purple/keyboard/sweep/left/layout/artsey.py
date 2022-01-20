@@ -3,13 +3,16 @@ from adafruit_hid.keycode import Keycode
 from adafruit_hid.mouse import Mouse
 
 from purple.action import Action, Lock, MediaPress, MouseMove, MousePress, OneShot, Press, ToLayer
+from purple.helpers import key
 from purple.layer import Layer
 
 
 class Layout:
+    name = "ARTSEY (Left)"
     auto_mod = []
     layers = [
         Layer(
+            "Base",
             {
                 0b00000100000000: Action(Press(Keycode.A), ToLayer(2)),
                 0b10010000000000: Action(Press(Keycode.B)),
@@ -62,6 +65,7 @@ class Layout:
             (0, 0, 0)
         ),
         Layer(
+            "Numbers",
             {
                 0b00000000100000: Action(ToLayer(0)),
                 0b00000100000000: Action(Press(Keycode.ONE)),
@@ -78,6 +82,7 @@ class Layout:
             (0, 64, 64)
         ),
         Layer(
+            "Brackets",
             {
                 0b00000100000000: Action(ToLayer(0)),
                 0b00000000100000: Action(Press(Keycode.SHIFT, Keycode.RIGHT_BRACKET)),
@@ -90,6 +95,7 @@ class Layout:
             (0, 0, 64)
         ),
         Layer(
+            "Symbols",
             {
                 0b00000000100000: Action(Press(Keycode.GRAVE_ACCENT)),
                 0b00000001000000: Action(Press(Keycode.SEMICOLON)),
@@ -103,6 +109,7 @@ class Layout:
             (64, 0, 64)
         ),
         Layer(
+            "Extras",
             {
                 0b00000001000000: Action(MediaPress(ConsumerControlCode.VOLUME_INCREMENT), hold=True),
                 0b00000010000000: Action(Press(Keycode.INSERT)),
@@ -115,6 +122,7 @@ class Layout:
             (64, 0, 0)
         ),
         Layer(
+            "Navigation",
             {
                 0b00000000100000: Action(Press(Keycode.PAGE_UP)),
                 0b00000001000000: Action(Press(Keycode.HOME)),
@@ -130,6 +138,7 @@ class Layout:
             (64, 64, 0)
         ),
         Layer(
+            "Mouse",
             {
                 0b00000000100000: Action(MouseMove(0, 0, 1), hold=True),
                 0b00000001000000: Action(MousePress(Mouse.RIGHT_BUTTON)),

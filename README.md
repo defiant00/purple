@@ -26,8 +26,8 @@
     2. `adafruit_debouncer.mpy`
     3. `adafruit_pixelbuf.mpy`
     4. `neopixel.mpy`
-3. Edit `code.py` imports to import the keyboard, layout, and any extras you want to use.
-4. Copy `code.py` and the `purple` folder to your `CIRCUITPY` drive.
+3. Create your `code.py` based off of `example code.py`.
+4. Copy your `code.py` and the `purple` folder to your `CIRCUITPY` drive.
 
 ### Extras
 
@@ -51,20 +51,22 @@ The core engine handles basic input and state management. All extra functionalit
 
 ### Creating a new Keyboard
 
-`purple/keyboard/[kb_name]/[board].py`
+`purple/keyboard/[kb_name]/[side]/keyboard.py`
 * `kb_name` - The name of the keyboard.
-* `board` - `keyboard` for a single board. `left` or `right` if it's a split board.
+* `side` - `left` or `right` if it's a split board.
 
-A keyboard defines a list of `Key` objects specifying the board pins, eg:
+A keyboard defines a class that has a name and a list of `Key` objects specifying the board pins, eg:
 ```python
-keys = [
-    Key(DigitalInOut(board.A0)),
-    Key(DigitalInOut(board.A1)),
-    Key(DigitalInOut(board.A2)),
-]
+class Keyboard:
+    name = "My Keyboard"
+    keys = [
+        Key(DigitalInOut(board.A0)),
+        Key(DigitalInOut(board.A1)),
+        Key(DigitalInOut(board.A2)),
+    ]
 ```
 
-Default import is `from purple.key import Key`. You can also use `from purple.key_debounce import Key` if you are getting duplicate keypresses.
+Default `Key` import is `from purple.key import Key`. You can also use `from purple.key_debounce import Key` if you are getting duplicate keypresses.
 
 Keys are specified from left to right and top to bottom. For example, the Sweep's key order looks like this:
 ```
@@ -84,23 +86,25 @@ For split boards, the **left** side is specified this way. The **right** side sh
 
 ### Creating a new Layout
 
-`purple/keyboard/[kb_name]/layout/[layout_name].py`
+`purple/keyboard/[kb_name]/[side]/layout/[layout_name].py`
 * `kb_name` - The name of the keyboard.
+* `side` - `left` or `right` if it's a split board.
 * `layout_name` - The name of the layout.
 
 A layout defines what happens when a chord is pressed or held. It contains:
+* `name` - The name of the layout.
 * `auto_mod` - A list of modifier keycodes to apply on hold.
 * `layers` - A list of layers. Chord resolution starts on the current layer and works its way back to 0 until it finds a layer that can handle the chord.
-    * `Layer` - A class containing a dictionary of chords and actions, and the layer color.
+    * `Layer` - A class containing the layer name, a dictionary of chords and actions, and the layer color.
         * `chord` - A binary representation of the chord, with `1` being pressed, and `0` released. The bit location corresponds with the key, so for example `0b0001` is key 0 pressed on a 4-key layout, and `0b1100` is keys 2 and 3 on the same.
             * `purple.helpers` contains `key(index)` that can be used to simplify creating chords, and the values can also be added. In the above example, `key(0)` is key 0, and `key(2)+key(3)` is keys 2 and 3 pressed.
         * `Action` - Class defining the action to take for a chord. The `Action(tap_action, hold_action=None, hold=False, auto_mod=True)` constructor has the following parameters:
-            * `tap_action` - The action to take when the key is tapped.
+            * `tap_action` - The action to take when the key is tapped. `None` to do nothing.
             * `hold_action` - The action to take when the key is held. `tap_action` is used if `hold_action` is `None`.
             * `hold` - Whether separate hold and release messages should be sent when the key is held down. Used for modifiers like `Shift` or keys you want to repeat.
             * `auto_mod` - Whether Auto Mod should apply to this key when held down.
             * Available actions are:
-                * `Press(*keycodes)` - Press the specified keys.
+                * `Press(*keycodes, one_shot=True)` - Press the specified keys. `one_shot` specifies whether any one shot keys should be applied.
                     * Simple key map: `Action(Press(Keycode.A))`
                     * `z` on tap, `Ctrl+z` on hold: `Action(Press(Keycode.Z), Press(Keycode.CONTROL, Keycode.Z))`
                 * `OneShot(*keycodes)` - Add or remove the specified keys to the next normal keypress.
@@ -127,6 +131,17 @@ Pull requests for bug fixes, new keyboards, and new layouts are all welcome!
 None at this time.
 
 ## Release Notes
+
+### 0.6.0 [2022-01-19]
+
+* Added
+    * Keyboard class
+    * Keyboard, layout, and layer names
+    * `one_shot` parameter to the `Press` action
+    * `Action(None)` for an action that does nothing
+* Updated
+    * Folder and file naming conventions
+    * `key_buffer` to `one_shot_key_buffer` to more accurately reflect its usage
 
 ### 0.5.2 [2022-01-14]
 

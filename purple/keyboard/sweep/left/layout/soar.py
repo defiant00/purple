@@ -7,9 +7,11 @@ from purple.layer import Layer
 
 
 class Layout:
+    name = "Soar (Left)"
     auto_mod = []
     layers = [
-        Layer(  # Base
+        Layer(
+            "Base",
             {
                 key(5): Action(Press(Keycode.A)),
                 key(10): Action(Press(Keycode.B)),
@@ -66,7 +68,7 @@ class Layout:
                 key(5)+key(9)+key(15): Action(Lock(Keycode.GUI)),
 
                 # Other
-                key(16): Action(Press(Keycode.SPACE), Press(Keycode.SHIFT), hold=True),
+                key(16): Action(Press(Keycode.SPACE), Press(Keycode.SHIFT, one_shot=False), hold=True),
                 key(5)+key(6)+key(16): Action(Press(Keycode.TAB)),
                 key(7)+key(8)+key(16): Action(Press(Keycode.ENTER)),
                 key(15): Action(Press(Keycode.BACKSPACE), hold=True),
@@ -80,7 +82,8 @@ class Layout:
             },
             (0, 0, 0)
         ),
-        Layer(  # Nav
+        Layer(
+            "Nav",
             {
                 key(0): Action(Press(Keycode.PAGE_UP)),
                 key(1): Action(Press(Keycode.HOME)),
@@ -106,7 +109,8 @@ class Layout:
             },
             (64, 0, 64)
         ),
-        Layer(  # Mouse
+        Layer(
+            "Mouse",
             {
                 key(0): Action(MouseMove(0, 0, 1), hold=True),
                 key(1): Action(MousePress(Mouse.RIGHT_BUTTON)),
@@ -128,7 +132,8 @@ class Layout:
             },
             (64, 0, 0)
         ),
-        Layer(  # Numbers
+        Layer(
+            "Numbers",
             {
                 # Base
                 key(5): Action(Press(Keycode.ZERO)),
@@ -159,7 +164,8 @@ class Layout:
             },
             (0, 64, 64)
         ),
-        Layer(  # Functions
+        Layer(
+            "Functions",
             {
                 # Base
                 key(10): Action(Press(Keycode.F1)),
