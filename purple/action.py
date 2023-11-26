@@ -19,6 +19,13 @@ class Lock:
     def run(self, core, action, hold):
         core.toggle_lock(self._keycodes)
 
+class Hold:
+    def __init__(self, *keycodes):
+        self._keycodes = keycodes
+
+    def run(self, core, action, hold):
+        core.toggle_hold(self._keycodes)
+
 
 class MediaPress:
     def __init__(self, consumer_control_code):

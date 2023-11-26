@@ -26,11 +26,38 @@ class Core:
         self.layer_index = 0
         self._one_shot_key_buffer = []
         self._lock_key_buffer = []
+        # buffer for keys pressed
+        self._pressed_keys = []
+        # buffer for keys held
+        self._held_keys = []
         self._held_mouse_movement = ()
         self._current_time = supervisor.ticks_ms()
         self._prior_time = self._current_time
         self._prior_mouse_time = self._current_time
         self._prior_change_time = self._current_time
+
+    def _press_key(self, *keycodes):
+        """
+        Presses a key on the keyboard, and adds it to the list of pressed keys.
+        This way we can track which keys need to be released later.
+        """
+        self._hid_keyboard.press(*keycodes)
+        self._pressed_keys.append(*keycodes)
+
+    def _release_key(self, keycode):
+        """
+        Releases a key on the keyboard, and removes it from the list of pressed keys.
+        """
+        self._hid_keyboard.release(keycode)
+        self._pressed_keys.remove(keycode)
+
+    def _release_keys(self):
+        """
+        Releases all keys that are currently pressed.
+        """
+        for keycode in self._pressed_keys:
+            self._hid_keyboard.release(keycode)
+        self._pressed_keys.clear()
 
     def _add_to_buffer(buffer, keycodes):
         for keycode in keycodes:
@@ -55,7 +82,7 @@ class Core:
     
     def _release_all(self):
         self._hid_consumer_control.release()
-        self._hid_keyboard.release_all()
+        self._release_keys() # we use the wrapper, so that the buffer is cleared
         self._hid_mouse.release_all()
         self._held_mouse_movement = ()
     
@@ -95,7 +122,7 @@ class Core:
             Core._add_to_buffer(buffer, self._layout.auto_mod)
         # primary keys
         Core._add_to_buffer(buffer, keycodes)
-        self._hid_keyboard.press(*buffer)
+        self._press_key(*buffer) 
         if not (hold and action.hold):
             self._release_all()
 
@@ -105,6 +132,15 @@ class Core:
                 self._lock_key_buffer.remove(keycode)
             else:
                 self._lock_key_buffer.append(keycode)
+
+    def toggle_hold(self, keycodes):
+        for keycode in keycodes:
+            if keycode in self._held_keys:
+                self._held_keys.remove(keycode)
+                self._hid_keyboard.press(keycode)
+            else:
+                self._held_keys.append(keycode)
+                self._hid_keyboard.release(keycode)
 
     def run(self):
         try:
