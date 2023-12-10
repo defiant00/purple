@@ -107,6 +107,7 @@ A layout defines what happens when a chord is pressed or held. It contains:
                 * `Press(*keycodes, one_shot=True)` - Press the specified keys. `one_shot` specifies whether any one shot keys should be applied.
                     * Simple key map: `Action(Press(Keycode.A))`
                     * `z` on tap, `Ctrl+z` on hold: `Action(Press(Keycode.Z), Press(Keycode.CONTROL, Keycode.Z))`
+                * `Hold(*keycodes)` - Toggle which keys are held. The corresponding key presses and releases are sent immediately. Useful for things like holding down `Alt` while tapping `Tab` multiple times to switch between programs.
                 * `OneShot(*keycodes)` - Add or remove the specified keys to the next normal keypress.
                     * Shift the next key: `Action(OneShot(Keycode.SHIFT))`
                 * `Lock(*keycodes)` - Toggle whether the specified keys are locked or unlocked. Locked keys are added automatically to other presses.
@@ -126,11 +127,18 @@ A layout defines what happens when a chord is pressed or held. It contains:
 
 Pull requests for bug fixes, new keyboards, and new layouts are all welcome!
 
+**Contributors:** jgait, trieloff
+
 ## Known Issues
 
 None at this time.
 
 ## Release Notes
+
+### 0.7.0 [2023-12-09]
+
+* Added
+    * `Hold` action - thanks **trieloff**!
 
 ### 0.6.0 [2022-01-19]
 

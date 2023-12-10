@@ -12,6 +12,14 @@ class Action:
             self._tap_action.run(core, self, hold)
 
 
+class Hold:
+    def __init__(self, *keycodes):
+        self._keycodes = keycodes
+
+    def run(self, core, action, hold):
+        core.toggle_hold(self._keycodes)
+
+
 class Lock:
     def __init__(self, *keycodes):
         self._keycodes = keycodes
